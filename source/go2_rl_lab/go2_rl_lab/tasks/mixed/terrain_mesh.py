@@ -66,9 +66,8 @@ def _height_field_with_border(
     if slope_threshold_override is not None:
         work_cfg.slope_threshold = slope_threshold_override
     height_function = _resolve_height_function(work_cfg.function)
-    heights[border_pixels:-border_pixels, border_pixels:-border_pixels] = height_function(
-        difficulty, work_cfg
-    )
+    generated_heights, _ = height_function(difficulty, work_cfg)
+    heights[border_pixels:-border_pixels, border_pixels:-border_pixels] = generated_heights
     return heights, terrain_size, horizontal_scale, vertical_scale
 
 

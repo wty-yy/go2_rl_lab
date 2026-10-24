@@ -18,7 +18,6 @@ class Go2Actuator(DelayedPDActuator):
     def __init__(self, cfg: Go2ActuatorCfg, *args, **kwargs):
         super().__init__(cfg, *args, **kwargs)
 
-        self._joint_vel = torch.zeros_like(self.computed_effort)
         self._effort_y1 = self._resolve_motor_parameter(cfg.Y1, 1e9)
         self._effort_y2 = self._resolve_motor_parameter(cfg.Y2, cfg.Y1)
         self._velocity_x1 = self._resolve_motor_parameter(cfg.X1, 1e9)
@@ -38,7 +37,6 @@ class Go2Actuator(DelayedPDActuator):
         joint_vel: torch.Tensor,
     ) -> ArticulationActions:
         """Compute and limit joint effort for one simulation step."""
-        self._joint_vel[:] = joint_vel
         control_action = super().compute(control_action, joint_pos, joint_vel)
 
         self.applied_effort -= (
@@ -51,19 +49,21 @@ class Go2Actuator(DelayedPDActuator):
         control_action.joint_efforts = self.applied_effort
         return control_action
 
-    def _clip_effort(self, effort: torch.Tensor) -> torch.Tensor:
-        same_direction = self._joint_vel * effort > 0
+    def _clip_effort(self, effort: torch.Tensor, joint_vel: torch.Tensor) -> torch.Tensor:
+        """Limit torque using the current joint speed supplied by the PD actuator."""
+        same_direction = joint_vel * effort > 0
         max_effort = torch.where(same_direction, self._effort_y1, self._effort_y2)
         max_effort = torch.where(
-            self._joint_vel.abs() < self._velocity_x1,
+            joint_vel.abs() < self._velocity_x1,
             max_effort,
-            self._compute_effort_limit(max_effort),
+            self._compute_effort_limit(max_effort, joint_vel),
         )
         return torch.clip(effort, -max_effort, max_effort)
 
-    def _compute_effort_limit(self, max_effort: torch.Tensor) -> torch.Tensor:
+    def _compute_effort_limit(self, max_effort: torch.Tensor, joint_vel: torch.Tensor) -> torch.Tensor:
+        """Compute the linear torque limit above the full-torque speed."""
         slope = -max_effort / (self._velocity_x2 - self._velocity_x1)
-        limit = slope * (self._joint_vel.abs() - self._velocity_x1) + max_effort
+        limit = slope * (joint_vel.abs() - self._velocity_x1) + max_effort
         return limit.clip(min=0.0)
 
 
@@ -74,7 +74,7 @@ class Go2ActuatorCfg(DelayedPDActuatorCfg):
     class_type: type = Go2Actuator
 
     joint_effort_limit: float = 1.0e9
-    """Preserve beta2 solver limits; the custom motor model clips effort."""
+    """Let the custom motor model limit torque without additional solver clipping."""
 
     X1: float = 13.5
     """Maximum speed at full torque, in rad/s."""

@@ -67,12 +67,12 @@
 <details>
 <summary><strong>（方法一）Docker 容器环境</strong></summary>
 
-已配置的 Docker 镜像为 [wtyyy/isaaclab:3.0-ea](https://hub.docker.com/r/wtyyy/isaaclab)。使用 `source/rsl_rl` 中的项目版 RSL-RL `3.3.0`
+已配置的 Docker 镜像为 [wtyyy/isaaclab:3.0.0](https://hub.docker.com/r/wtyyy/isaaclab)。使用 `source/rsl_rl` 中的项目版 RSL-RL `3.3.0`
 
 > 如果当前宿主机用户为 root，请参考 [Docker Hub 中的容器启动方法](https://hub.docker.com/repository/docker/wtyyy/isaaclab/general)。
 
 ```bash
-# 宿主机：启动 EA 运行环境，后续项目命令均在容器内执行
+# 宿主机：启动 Isaac Lab 3.0 运行环境，后续项目命令均在容器内执行
 mkdir -p "${HOME}/isaaclab_docker/.cache/ov" "${HOME}/isaaclab_docker/.nvidia-omniverse"
 docker run -it --name go2-rl-lab-3.0 \
   -e DEFAULT_UID="$(id -u)" \
@@ -90,7 +90,7 @@ docker run -it --name go2-rl-lab-3.0 \
   -v /path/to/Coding:/home/user/Coding \
   -v ${HOME}/isaaclab_docker/.cache/ov:/home/user/.cache/ov \
   -v ${HOME}/isaaclab_docker/.nvidia-omniverse:/home/user/.nvidia-omniverse \
-  wtyyy/isaaclab:3.0-ea zsh
+  wtyyy/isaaclab:3.0.0 zsh
 ```
 
 将 `/path/to/Coding` 替换为宿主机上你的实际代码存放目录

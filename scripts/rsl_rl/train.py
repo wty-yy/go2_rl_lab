@@ -23,7 +23,7 @@ import argparse
 import signal
 import sys
 
-from isaaclab.app import AppLauncher, launch_simulation
+from isaaclab.app import add_launcher_args, launch_simulation
 
 # local imports
 import cli_args  # isort: skip
@@ -53,8 +53,8 @@ parser.add_argument(
 cli_args.add_rsl_rl_args(parser)
 # append Rerun port arguments
 port_args.add_rerun_port_args(parser)
-# append AppLauncher cli args
-AppLauncher.add_app_launcher_args(parser)
+# append runtime launcher cli args
+add_launcher_args(parser)
 args_cli, hydra_args = parser.parse_known_args()
 port_args.validate_rerun_port_args(parser, args_cli)
 
@@ -87,10 +87,11 @@ if args_cli.video:
 import go2_rl_lab.tasks  # ruff: ignore[unused-import]
 import gymnasium as gym
 from isaaclab.envs import ManagerBasedRLEnvCfg
+from isaaclab_newton.physics import NewtonCfg
 from isaaclab.utils.assets import retrieve_file_path
 from isaaclab.utils.io import dump_yaml
 from isaaclab_tasks.utils import get_checkpoint_path
-from isaaclab_tasks.utils.hydra import hydra_task_config
+from isaaclab_tasks.utils import resolve_task_config
 from isaaclab_rl.entrypoints.common import apply_video_recording
 
 from rsl_rl.base.base_runner import BaseRunner
@@ -110,7 +111,6 @@ def _exit_on_sigint(signum: int, _frame: object) -> None:
     os._exit(128 + signum)
 
 
-@hydra_task_config(args_cli.task, "rsl_rl_cfg_entry_point")
 def main(env_cfg: ManagerBasedRLEnvCfg, agent_cfg: RslRlBaseRunnerCfg) -> None:
     """Train with RSL-RL agent."""
     # override configurations with non-hydra CLI arguments
@@ -129,6 +129,8 @@ def main(env_cfg: ManagerBasedRLEnvCfg, agent_cfg: RslRlBaseRunnerCfg) -> None:
     # while preserving them for video recording or an active visualizer.
     visualizer_enabled = any(name != "none" for name in (args_cli.visualizer or []))
     env_cfg.scene.robot.spawn.visuals_enabled = bool(args_cli.video or visualizer_enabled)
+    if isinstance(env_cfg.sim.physics, NewtonCfg):
+        env_cfg.sim.physics.load_visual_shapes = env_cfg.scene.robot.spawn.visuals_enabled
     port_args.apply_rerun_port_args(env_cfg, args_cli)
 
     # multi-gpu training configuration
@@ -233,6 +235,6 @@ def train(env_cfg: ManagerBasedRLEnvCfg, agent_cfg: RslRlBaseRunnerCfg, log_dir:
 
 if __name__ == "__main__":
     try:
-        main()
+        main(*resolve_task_config(args_cli.task, "rsl_rl_cfg_entry_point", overrides=hydra_args))
     finally:
         runtime_args.shutdown_runtime()

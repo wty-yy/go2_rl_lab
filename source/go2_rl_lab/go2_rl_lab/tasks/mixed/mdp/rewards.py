@@ -133,15 +133,11 @@ def action_smoothness_l2(env: ManagerBasedRLEnv) -> torch.Tensor:
     """Penalize the second-order difference between consecutive actions."""
     action = env.action_manager.action
     previous_action = env.action_manager.prev_action
-    previous_previous_action = getattr(env.action_manager, "prev_prev_action", None)
-
-    if previous_previous_action is None:
-        previous_previous_action = getattr(env, "_previous_previous_action", None)
-        if previous_previous_action is None or previous_previous_action.shape != action.shape:
-            previous_previous_action = torch.zeros_like(action)
-        if hasattr(env, "episode_length_buf"):
-            previous_previous_action[env.episode_length_buf <= 1] = 0.0
-        env._previous_previous_action = previous_action.clone()
+    previous_previous_action = getattr(env, "_previous_previous_action", None)
+    if previous_previous_action is None or previous_previous_action.shape != action.shape:
+        previous_previous_action = torch.zeros_like(action)
+    previous_previous_action[env.episode_length_buf <= 1] = 0.0
+    env._previous_previous_action = previous_action.clone()
 
     difference = torch.square(action - 2.0 * previous_action + previous_previous_action)
     difference *= previous_action != 0

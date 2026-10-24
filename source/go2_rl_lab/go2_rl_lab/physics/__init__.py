@@ -6,14 +6,13 @@ __all__ = [
     "BodyComBucketRandomizationCfg",
     "NewtonMJWarpResettableManager",
     "RandomizedMJWarpSolverCfg",
-    "ResettableNewtonMJWarpManager",
 ]
 
 
 def __getattr__(name: str):
     """Load solver implementations only when the active runtime requests them."""
-    if name in {"NewtonMJWarpResettableManager", "ResettableNewtonMJWarpManager"}:
-        from . import resettable_mjwarp_manager
+    if name == "NewtonMJWarpResettableManager":
+        from .resettable_mjwarp_manager import NewtonMJWarpResettableManager
 
-        return getattr(resettable_mjwarp_manager, name)
+        return NewtonMJWarpResettableManager
     raise AttributeError(f"module {__name__!r} has no attribute {name!r}")

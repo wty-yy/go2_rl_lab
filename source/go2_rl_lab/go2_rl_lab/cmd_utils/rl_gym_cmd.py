@@ -185,16 +185,20 @@ class RLGymVelCommand(CommandTerm):
         self.metrics["max_velocity_command_y"] = self.max_command_y
         self.metrics["max_velocity_command_yaw"] = self.max_command_yaw
 
-    def reset(self, env_ids: Sequence[int] | None = None):
-        if env_ids is None:
-            env_ids = torch.arange(self.num_envs, device=self.device)
+    def reset(self, env_ids: Sequence[int] | slice | None = None):
+        """Reset command state for all or selected environments."""
+        if env_ids is None or isinstance(env_ids, slice):
+            env_ids = torch.arange(self.num_envs, device=self.device)[env_ids or slice(None)]
         self.time_left[env_ids] = self.cfg.resampling_time
         self.commands_xy_accumulation[env_ids] = 0.0
         self.max_move_distance[env_ids] = 0.0
         self.last_is_limit_vel[env_ids] = False
         return super().reset(env_ids)
 
-    def _resample(self, env_ids: Sequence[int]):
+    def _resample(self, env_ids: Sequence[int] | slice):
+        """Sample velocity commands for the selected environments."""
+        if isinstance(env_ids, slice):
+            env_ids = torch.arange(self.num_envs, device=self.device)[env_ids]
         if len(env_ids) == 0:
             return
 

@@ -100,7 +100,7 @@ class PerSubTerrainSlopeThresholdGenerator(TerrainGenerator):
         ]
         terrain_size = work_cfg.size
         work_cfg.size = tuple(sub_terrain_size)
-        z_gen = raw_function(difficulty, work_cfg)
+        z_gen, _ = raw_function(difficulty, work_cfg)
         heights[border_pixels:-border_pixels, border_pixels:-border_pixels] = z_gen
 
         vertices, triangles = convert_height_field_to_mesh(
@@ -538,20 +538,37 @@ def with_slope_threshold(sub_terrain_cfg, slope_threshold: float | None):
     return sub_terrain_cfg
 
 
+def _height_field_with_origin(heights: np.ndarray, cfg) -> tuple[np.ndarray, np.ndarray]:
+    """Attach a centered spawn origin to a raw height field for Isaac Lab 3.0."""
+    center_x, center_y = (size // 2 for size in heights.shape)
+    radius = max(1, int(SPAWN_CENTER_HALF_EXTENT / cfg.horizontal_scale))
+    spawn_height = np.max(
+        heights[max(0, center_x - radius) : center_x + radius, max(0, center_y - radius) : center_y + radius]
+    )
+    origin = np.array(
+        [
+            (heights.shape[0] - 1) * cfg.horizontal_scale / 2,
+            (heights.shape[1] - 1) * cfg.horizontal_scale / 2,
+            spawn_height * cfg.vertical_scale,
+        ]
+    )
+    return heights, origin
+
+
 @height_field_to_mesh
-def robotlab_wave_terrain(difficulty: float, cfg) -> np.ndarray:
+def robotlab_wave_terrain(difficulty: float, cfg) -> tuple[np.ndarray, np.ndarray]:
     """RobotLab wave terrain: sinusoidal waves plus fine roughness."""
-    wave = hf_terrains.wave_terrain.__wrapped__(difficulty, cfg)
-    rough = hf_terrains.random_uniform_terrain.__wrapped__(difficulty, cfg)
-    return np.rint(wave + rough).astype(np.int16)
+    wave, _ = hf_terrains.wave_terrain.__wrapped__(difficulty, cfg)
+    rough, _ = hf_terrains.random_uniform_terrain.__wrapped__(difficulty, cfg)
+    return _height_field_with_origin(np.rint(wave + rough).astype(np.int16), cfg)
 
 
 @height_field_to_mesh
-def robotlab_rough_slope_terrain(difficulty: float, cfg) -> np.ndarray:
+def robotlab_rough_slope_terrain(difficulty: float, cfg) -> tuple[np.ndarray, np.ndarray]:
     """RobotLab rough slope terrain: pyramid slope plus fine roughness."""
-    slope = hf_terrains.pyramid_sloped_terrain.__wrapped__(difficulty, cfg)
-    rough = hf_terrains.random_uniform_terrain.__wrapped__(difficulty, cfg)
-    return np.rint(slope + rough).astype(np.int16)
+    slope, _ = hf_terrains.pyramid_sloped_terrain.__wrapped__(difficulty, cfg)
+    rough, _ = hf_terrains.random_uniform_terrain.__wrapped__(difficulty, cfg)
+    return _height_field_with_origin(np.rint(slope + rough).astype(np.int16), cfg)
 
 
 @configclass

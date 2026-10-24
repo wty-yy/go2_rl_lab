@@ -1,4 +1,4 @@
-"""Encode EA's configuration-owned video streams with imageio-ffmpeg."""
+"""Encode Isaac Lab's configuration-owned video streams with imageio-ffmpeg."""
 
 
 class FFmpegImageSequenceClip:
@@ -35,9 +35,9 @@ class FFmpegImageSequenceClip:
 
 
 def configure_video_writer() -> None:
-    """Attach the FFmpeg encoder to EA's recorder after the runtime is initialized.
+    """Attach the FFmpeg encoder after the runtime is initialized.
 
-    EA's recorder imports MoviePy 1.x, whose dependency constraints conflict with
+    Isaac Lab 3.0's recorder imports MoviePy 1.x, whose dependency constraints conflict with
     the image's IPython stack. Only the encoding adapter changes; Isaac Lab still
     owns capture sources, clip scheduling, filenames, and recorder cleanup.
     """

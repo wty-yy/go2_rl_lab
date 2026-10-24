@@ -3,7 +3,7 @@
 import gymnasium as gym
 
 from isaaclab.envs import ManagerBasedRLEnvCfg
-from isaaclab_tasks.utils.hydra import resolve_task_config
+from isaaclab_tasks.utils import resolve_task_config
 
 
 def parse_env_cfg(
@@ -32,7 +32,7 @@ def parse_env_cfg(
         RuntimeError: If the configuration for the task is not a class. We assume users always use a class for the
             environment configuration.
     """
-    # Compose the selected entry point through EA's shared task boundary.
+    # Compose the selected entry point through the shared task boundary.
     # Playback configs are registered separately from training configs in this project.
     spec = gym.spec(task_name.split(":")[-1])
     original_entry = spec.kwargs["env_cfg_entry_point"]

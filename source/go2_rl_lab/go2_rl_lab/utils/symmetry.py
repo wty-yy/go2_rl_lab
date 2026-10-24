@@ -29,7 +29,7 @@ class Go2SymmetryMapper:
     @property
     def base_env(self):
         """Return the unwrapped environment that owns managers and configs."""
-        return self.env.unwrapped if hasattr(self.env, "unwrapped") else self.env
+        return self.env.unwrapped
 
     def reverse_vector(self, value: torch.Tensor, signs: list[int]) -> torch.Tensor:
         """Flip coordinate axes for a vector observation term."""
@@ -48,16 +48,16 @@ class Go2SymmetryMapper:
 
     def restore_history(self, value: torch.Tensor, cfg) -> torch.Tensor:
         """Restore a flattened history term before applying symmetry."""
-        history_length = getattr(cfg, "history_length", 0)
-        if history_length > 0 and getattr(cfg, "flatten_history_dim", False):
+        history_length = cfg.history_length
+        if history_length > 0 and cfg.flatten_history_dim:
             term_dim = value.shape[-1] // history_length
             return value.reshape(*value.shape[:-1], history_length, term_dim)
         return value
 
     def flatten_history(self, value: torch.Tensor, cfg) -> torch.Tensor:
         """Flatten a restored history term back to the observation-manager layout."""
-        history_length = getattr(cfg, "history_length", 0)
-        if history_length > 0 and getattr(cfg, "flatten_history_dim", False):
+        history_length = cfg.history_length
+        if history_length > 0 and cfg.flatten_history_dim:
             return value.reshape(*value.shape[:-2], -1)
         return value
 

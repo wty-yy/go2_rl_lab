@@ -16,13 +16,15 @@ if TYPE_CHECKING:
 
 def reset_root_state_uniform(
     env: ManagerBasedEnv,
-    env_ids: torch.Tensor,
+    env_ids: torch.Tensor | slice | None,
     pose_range: dict[str, tuple[float, float]],
     velocity_range: dict[str, tuple[float, float]],
     asset_cfg: SceneEntityCfg = SceneEntityCfg("robot"),
 ):
     """Reset the selected root poses and velocities with uniform noise."""
     asset: RigidObject | Articulation = env.scene[asset_cfg.name]
+    if env_ids is None or isinstance(env_ids, slice):
+        env_ids = torch.arange(env.scene.num_envs, device=env.device)[env_ids or slice(None)]
 
     root_states = asset.data.default_root_state.torch[env_ids].clone()
     pose_ranges = torch.tensor(
@@ -64,13 +66,13 @@ def reset_root_state_uniform(
 
 def randomize_action_joint_pos_offset(
     env: ManagerBasedEnv,
-    env_ids: torch.Tensor | None,
+    env_ids: torch.Tensor | slice | None,
     action_term_name: str,
     offset_range: tuple[float, float],
 ):
     """Randomize the motor zero offset of a joint-position action term."""
-    if env_ids is None:
-        env_ids = torch.arange(env.scene.num_envs, device=env.device)
+    if env_ids is None or isinstance(env_ids, slice):
+        env_ids = torch.arange(env.scene.num_envs, device=env.device)[env_ids or slice(None)]
     elif not isinstance(env_ids, torch.Tensor):
         env_ids = torch.as_tensor(env_ids, dtype=torch.long, device=env.device)
     else:

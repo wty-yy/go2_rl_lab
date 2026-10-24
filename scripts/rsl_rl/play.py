@@ -20,7 +20,7 @@ Notes:
 
 import argparse
 
-from isaaclab.app import AppLauncher, launch_simulation
+from isaaclab.app import add_launcher_args, launch_simulation
 
 # local imports
 import cli_args  # isort: skip
@@ -48,8 +48,8 @@ parser.add_argument("--real-time", action="store_true", default=False, help="Run
 cli_args.add_rsl_rl_args(parser)
 # append Rerun port arguments
 port_args.add_rerun_port_args(parser)
-# append AppLauncher cli args
-AppLauncher.add_app_launcher_args(parser)
+# append runtime launcher cli args
+add_launcher_args(parser)
 args_cli = parser.parse_args()
 port_args.validate_rerun_port_args(parser, args_cli)
 # Kit capture needs RTX cameras; automatic GL capture uses its own renderer.
@@ -71,6 +71,7 @@ import go2_rl_lab.tasks  # ruff: ignore[unused-import]
 import gymnasium as gym
 from go2_rl_lab.utils.parser_cfg import parse_env_cfg
 from isaaclab.utils.assets import retrieve_file_path
+from isaaclab_newton.physics import NewtonCfg
 from isaaclab_tasks.utils import get_checkpoint_path
 from isaaclab_rl.entrypoints.common import apply_video_recording
 
@@ -140,6 +141,8 @@ def main() -> None:
         physics=args_cli.physics,
     )
     env_cfg.scene.robot.spawn.visuals_enabled = True
+    if isinstance(env_cfg.sim.physics, NewtonCfg):
+        env_cfg.sim.physics.load_visual_shapes = True
     port_args.apply_rerun_port_args(env_cfg, args_cli)
     _configure_play_visualizers(env_cfg)
     agent_cfg: RslRlBaseRunnerCfg = cli_args.parse_rsl_rl_cfg(args_cli.task, args_cli)
@@ -230,7 +233,7 @@ def play(env_cfg, agent_cfg, resume_path: str) -> None:
         policy_nn.reset()
         timestep = 0
         # simulate environment
-        while env.unwrapped.sim.is_headless_or_exist_active_visualizer():
+        while env.unwrapped.sim.is_running():
             start_time = time.time()
             # run everything in inference mode
             with torch.inference_mode():

@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import torch
 import warp as wp
-from newton import Model, ShapeFlags
+from newton import Model, ModelBuilder, ShapeFlags
 
 from isaaclab.physics import PhysicsManager
 from isaaclab_newton.physics.mjwarp_manager import NewtonMJWarpManager
@@ -45,21 +45,42 @@ class NewtonMJWarpResettableManager(NewtonMJWarpManager):
     _has_pending_hard_reset = False
 
     @classmethod
-    def start_simulation(cls) -> None:
+    def _prepare_builder_for_finalize(cls, builder: ModelBuilder) -> None:
         """Apply sensor-BVH filtering and CoM buckets before model finalization."""
-        if NewtonManager._builder is None:
-            cls.instantiate_builder_from_stage()
+        super()._prepare_builder_for_finalize(builder)
+        cls._restore_static_mesh_visibility(builder)
+        solver_cfg = PhysicsManager._cfg.solver_cfg
+        if solver_cfg.sensor_bvh_shape_flags is not None:
+            builder.default_bvh_cfg.shape_flags = ShapeFlags(solver_cfg.sensor_bvh_shape_flags)
+        if solver_cfg.body_com_buckets is not None:
+            apply_body_com_buckets(builder, solver_cfg.body_com_buckets)
 
-        physics_cfg = PhysicsManager._cfg
-        solver_cfg = None if physics_cfg is None else physics_cfg.solver_cfg
-        sensor_shape_flags = None if solver_cfg is None else getattr(solver_cfg, "sensor_bvh_shape_flags", None)
-        if sensor_shape_flags is not None:
-            NewtonManager._builder.default_bvh_cfg.shape_flags = ShapeFlags(sensor_shape_flags)
-        randomization_cfg = None if solver_cfg is None else getattr(solver_cfg, "body_com_buckets", None)
-        if randomization_cfg is not None:
-            apply_body_com_buckets(NewtonManager._builder, randomization_cfg)
+    @staticmethod
+    def _restore_static_mesh_visibility(builder: ModelBuilder) -> None:
+        """Keep USD-visible terrain meshes visible alongside their decorative outlines.
 
-        super().start_simulation()
+        Newton groups static shapes under body -1, so importing a visual outline
+        can hide the terrain collider as though the outline replaced its surface.
+        Restore only mesh colliders that USD explicitly allows in the viewport.
+        """
+        from pxr import UsdGeom
+
+        from isaaclab.sim.utils import get_current_stage
+
+        stage = get_current_stage()
+        for index, (body, label) in enumerate(zip(builder.shape_body, builder.shape_label)):
+            flags = builder.shape_flags[index]
+            if not label or body != -1 or flags & ShapeFlags.VISIBLE or not flags & ShapeFlags.COLLIDE_SHAPES:
+                continue
+            prim = stage.GetPrimAtPath(label)
+            if not prim or not prim.IsA(UsdGeom.Mesh):
+                continue
+            imageable = UsdGeom.Imageable(prim)
+            if (
+                imageable.ComputeVisibility() != UsdGeom.Tokens.invisible
+                and imageable.ComputePurpose() in (UsdGeom.Tokens.default_, UsdGeom.Tokens.proxy)
+            ):
+                builder.shape_flags[index] |= ShapeFlags.VISIBLE
 
     @classmethod
     def _build_solver(cls, model: Model, solver_cfg: MJWarpSolverCfg) -> None:
@@ -88,16 +109,19 @@ class NewtonMJWarpResettableManager(NewtonMJWarpManager):
             return
 
         world_reset_mask = NewtonManager._world_reset_mask
-        if world_reset_mask is None:
+        solver = NewtonManager._solver
+        if world_reset_mask is None or solver is None:
             raise RuntimeError("Cannot request a hard reset before Newton world masks are initialized.")
 
+        # Newton includes a global-world sentinel; MuJoCo accepts only simulated worlds.
+        reset_shape = (solver.mjw_data.nworld,)
         hard_reset_mask = cls._hard_reset_mask
         if (
             hard_reset_mask is None
-            or hard_reset_mask.shape != world_reset_mask.shape
+            or hard_reset_mask.shape != reset_shape
             or hard_reset_mask.device != world_reset_mask.device
         ):
-            hard_reset_mask = wp.zeros(world_reset_mask.shape, dtype=wp.bool, device=world_reset_mask.device)
+            hard_reset_mask = wp.zeros(reset_shape, dtype=wp.bool, device=world_reset_mask.device)
             cls._hard_reset_mask = hard_reset_mask
 
         env_ids = env_ids.to(device=str(world_reset_mask.device), dtype=torch.int64)
@@ -132,10 +156,4 @@ class NewtonMJWarpResettableManager(NewtonMJWarpManager):
         super()._solver_specific_clear()
 
 
-# Backward-compatible import name. The aliased class keeps its canonical
-# ``NewtonMJWarpResettableManager.__name__``, so Isaac Lab still identifies it as
-# a Newton backend even when downstream code imports the historical symbol.
-ResettableNewtonMJWarpManager = NewtonMJWarpResettableManager
-
-
-__all__ = ["NewtonMJWarpResettableManager", "ResettableNewtonMJWarpManager"]
+__all__ = ["NewtonMJWarpResettableManager"]

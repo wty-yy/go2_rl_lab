@@ -5,7 +5,7 @@ import sys
 from contextlib import ExitStack
 
 from isaaclab.app import launch_simulation
-from isaaclab.app.sim_launcher import make_physics_cfg
+from isaaclab.physics import PhysicsCfg
 from isaaclab.sim import SimulationCfg
 
 
@@ -28,13 +28,17 @@ def bootstrap_runtime(args_cli, overrides=()) -> None:
         key, separator, value = override.partition("=")
         if separator and key.lstrip("-") in {"physics", "env.sim.physics"}:
             physics = value
-    cfg = SimulationCfg(physics=make_physics_cfg(physics))
+    cfg = SimulationCfg(physics=PhysicsCfg())
     if args_cli.video and not args_cli.visualizer and not getattr(args_cli, "visualizer_explicit", False):
+        # Select EGL before task/terrain imports can cache pyglet's X11 display backend.
+        import pyglet
+
+        pyglet.options["headless"] = True
         from isaaclab_visualizers.newton import NewtonGLVisualizerCfg
 
         cfg.visualizer_cfgs = [NewtonGLVisualizerCfg(headless=True)]
     launcher_args = vars(args_cli).copy()
-    launcher_args["physics"] = None
+    launcher_args["physics"] = physics
     # Capture is configured on the final env; the launcher does not own encoding.
     launcher_args["video"] = False
     stack = ExitStack()

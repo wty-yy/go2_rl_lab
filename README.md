@@ -67,12 +67,12 @@ Two environment installation methods are available: Docker and uv
 <details>
 <summary><strong>(Method 1) Docker environment</strong></summary>
 
-The configured Docker image is [wtyyy/isaaclab:3.0-ea](https://hub.docker.com/r/wtyyy/isaaclab). Use the project RSL-RL package from `source/rsl_rl`, version `3.3.0`
+The configured Docker image is [wtyyy/isaaclab:3.0.0](https://hub.docker.com/r/wtyyy/isaaclab). Use the project RSL-RL package from `source/rsl_rl`, version `3.3.0`
 
 > If the current host user is root, follow the [container startup instructions on Docker Hub](https://hub.docker.com/repository/docker/wtyyy/isaaclab/general).
 
 ```bash
-# Host: start the EA runtime; run subsequent project commands inside the container
+# Host: start the Isaac Lab 3.0 runtime; run subsequent project commands inside the container
 mkdir -p "${HOME}/isaaclab_docker/.cache/ov" "${HOME}/isaaclab_docker/.nvidia-omniverse"
 docker run -it --name go2-rl-lab-3.0 \
   -e DEFAULT_UID="$(id -u)" \
@@ -90,7 +90,7 @@ docker run -it --name go2-rl-lab-3.0 \
   -v /path/to/Coding:/home/user/Coding \
   -v ${HOME}/isaaclab_docker/.cache/ov:/home/user/.cache/ov \
   -v ${HOME}/isaaclab_docker/.nvidia-omniverse:/home/user/.nvidia-omniverse \
-  wtyyy/isaaclab:3.0-ea zsh
+  wtyyy/isaaclab:3.0.0 zsh
 ```
 
 Replace `/path/to/Coding` with the actual directory containing your code on the host
