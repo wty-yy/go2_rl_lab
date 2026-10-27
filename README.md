@@ -2,14 +2,14 @@
   <h1>Go2 RL Lab</h1>
   <p><strong>High-speed, agile velocity locomotion control for Unitree Go2 with Isaac Lab<br><a href="https://github.com/wty-yy/go2_rl_lab/tree/gym">(original go2_rl_gym branch)</a></strong></p>
   <p>
-    <a href="https://isaac-sim.github.io/IsaacLab/"><img height="20" src="https://img.shields.io/badge/Isaac%20Lab-3.0%20EA-silver.svg" alt="Isaac Lab 3.0 EA"></a>&nbsp;
+    <a href="https://github.com/isaac-sim/IsaacLab/releases/tag/v3.0.0"><img height="20" src="https://img.shields.io/badge/Isaac%20Lab-3.0-silver.svg" alt="Isaac Lab 3.0"></a>&nbsp;
     <a href="https://swanlab.cn/@wty-yy/go2-rl-lab/v1/lxqfax/overview"><img height="20" src="https://raw.githubusercontent.com/SwanHubX/assets/main/badge1.svg" alt="SwanLab"></a>&nbsp;
     <a href="LICENSE"><img height="20" src="https://img.shields.io/badge/license-MIT-blue.svg" alt="MIT License"></a>
   </p>
   <p><strong>🌎 English</strong>&nbsp;&nbsp;·&nbsp;&nbsp;<a href="README.zh-CN.md">🇨🇳 中文</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="https://www.roboticsproceedings.org/rss22/p156.pdf">📄 Paper [RSS 2026]</a></p>
 </div>
 
-📢 `go2_rl_gym` has been renamed to `go2_rl_lab`, built on **Isaac Lab 3.0 EA / Isaac Sim 6.1** with **Newton MJWarp** as the physics backend and numerous improvements. See [from_gym_to_lab.md](docs/from_gym_to_lab.md) for the update notes
+📢 `go2_rl_gym` has been renamed to `go2_rl_lab`, built on **Isaac Lab 3.0 / Isaac Sim 6.2** with **Newton MJWarp** as the physics backend and numerous improvements. See [from_gym_to_lab.md](docs/from_gym_to_lab.md) for the update notes
 
 <table width="100%">
   <thead>
@@ -60,7 +60,7 @@
 
 ## 📦 Installation
 
-Requirements: Linux, an NVIDIA GPU, Python 3.12, Isaac Sim 6.1, and Isaac Lab 3.0 EA
+Requirements: Linux, an NVIDIA GPU, Python 3.12, Isaac Sim 6.2, and Isaac Lab 3.0
 
 Two environment installation methods are available: Docker and uv
 
@@ -104,7 +104,7 @@ Replace `/path/to/Coding` with the actual directory containing your code on the 
 uv venv ~/go2-rl-lab-env --python 3.12 --seed --prompt go2-rl-lab  # Create the virtual environment under ~/go2-rl-lab-env
 source ~/go2-rl-lab-env/bin/activate  # Activate the virtual environment
 uv pip install "torch==2.11.0" "torchvision==0.26.0" --index-url "https://download.pytorch.org/whl/cu128"  # PyTorch
-uv pip install --prerelease="allow" --index-strategy unsafe-best-match "isaaclab[isaacsim,all]==3.0.0rc1" --extra-index-url https://pypi.nvidia.com  # Isaac Lab
+uv pip install --prerelease="allow" --index-strategy unsafe-best-match "isaaclab[isaacsim,all]==3.0.0" --extra-index-url https://pypi.nvidia.com  # Isaac Lab
 ```
 
 </details>
@@ -116,7 +116,7 @@ After setting up the environment, install this repository:
 sudo apt update && sudo apt install -y git-lfs
 
 cd /home/user/Coding  # Container path; replace with your actual path for host installation
-git clone --branch lab https://github.com/wty-yy/go2_rl_lab.git
+git clone --branch lab3.0 https://github.com/wty-yy/go2_rl_lab.git
 cd go2_rl_lab
 git lfs pull
 

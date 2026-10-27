@@ -2,15 +2,15 @@
   <h1>Go2 RL Gym → Go2 RL Lab</h1>
   <p><strong>迁移说明与性能对比 · 2026-10-17</strong></p>
   <p>
-    <a href="https://isaac-sim.github.io/IsaacLab/"><img height="20" src="https://img.shields.io/badge/Isaac%20Lab-3.0%20EA-silver.svg" alt="Isaac Lab 3.0 EA"></a>&nbsp;
+    <a href="https://github.com/isaac-sim/IsaacLab/releases/tag/v3.0.0"><img height="20" src="https://img.shields.io/badge/Isaac%20Lab-3.0-silver.svg" alt="Isaac Lab 3.0"></a>&nbsp;
     <a href="../LICENSE"><img height="20" src="https://img.shields.io/badge/license-MIT-blue.svg" alt="MIT License"></a>
   </p>
   <p><a href="from_gym_to_lab.md">🌎 English</a>&nbsp;&nbsp;·&nbsp;&nbsp;<strong>🇨🇳 中文</strong></p>
 </div>
 
-`go2_rl_gym` 正式更名为 `go2_rl_lab`，基于 **Isaac Lab 3.0 EA / Isaac Sim 6.1** 构建，物理后端切换为 **Newton MJWarp**。
+`go2_rl_gym` 正式更名为 `go2_rl_lab`，基于 **Isaac Lab 3.0 / Isaac Sim 6.2** 构建，物理后端切换为 **Newton MJWarp**。
 
-旧版 Isaac Gym 实现保留在 [gym 分支](https://github.com/wty-yy/go2_rl_lab/tree/gym)，当前 Isaac Lab 实现使用 `lab` 分支。
+旧版 Isaac Gym 实现保留在 [gym 分支](https://github.com/wty-yy/go2_rl_lab/tree/gym)，当前 Isaac Lab 实现使用 [lab3.0 分支](https://github.com/wty-yy/go2_rl_lab/tree/lab3.0)。
 
 ## 策略表现
 
@@ -23,7 +23,7 @@
 
 ## 训练性能
 
-RTX 4090 · MoE-CTS · 关闭可视化 · 预热 10 个迭代后统计 50 个迭代。
+RTX 4090 · MoE-CTS · 关闭可视化 · 预热 10 个迭代后统计 50 个迭代。数据采集于 2026-10-17，早于 3.0 正式版发布。
 
 | 并行环境数 | 框架 | 稳态显存（GiB） | 采样时间（s/iter） | 总迭代时间（s/iter） |
 | ---: | --- | ---: | ---: | ---: |

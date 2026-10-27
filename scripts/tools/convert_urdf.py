@@ -10,7 +10,7 @@ Full Command:
         --ros-package go2=source/go2_rl_lab/go2_rl_lab/assets/urdf --viz none
 
 Notes:
-    Requires the configured Isaac Lab EA environment.
+    Requires the configured Isaac Lab 3.0 environment.
     --no-self-collision explicitly disables articulation self-collision.
     Parent-child joint collision filtering remains authored by the importer.
 """
@@ -222,7 +222,7 @@ def _preserve_physx_joint_velocity_limits(stage) -> int:
     """Mirror importer-authored Newton velocity limits into the equivalent PhysX attribute.
 
     Both USD attributes use degrees per second for revolute joints and distance per second for
-    prismatic joints. The EA importer now authors only the Newton attribute.
+    prismatic joints. The URDF importer authors only the Newton attribute.
     """
     from pxr import Sdf, UsdPhysics
 

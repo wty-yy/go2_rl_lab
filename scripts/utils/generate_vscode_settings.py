@@ -7,7 +7,7 @@ Full Command:
     ./go2_rl_lab.sh --generate-vscode-settings --verbose
 
 Notes:
-    Run in the configured Isaac Lab EA Python environment.
+    Run in the configured Isaac Lab 3.0 Python environment.
     Use --verbose to print the discovered import paths.
     Isaac Sim extension paths are discovered even without its VS Code settings.
     Pylance diagnostics are disabled while code navigation and completion remain available.

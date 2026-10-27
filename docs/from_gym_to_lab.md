@@ -2,15 +2,15 @@
   <h1>Go2 RL Gym → Go2 RL Lab</h1>
   <p><strong>Migration notes and performance comparison · 2026-10-17</strong></p>
   <p>
-    <a href="https://isaac-sim.github.io/IsaacLab/"><img height="20" src="https://img.shields.io/badge/Isaac%20Lab-3.0%20EA-silver.svg" alt="Isaac Lab 3.0 EA"></a>&nbsp;
+    <a href="https://github.com/isaac-sim/IsaacLab/releases/tag/v3.0.0"><img height="20" src="https://img.shields.io/badge/Isaac%20Lab-3.0-silver.svg" alt="Isaac Lab 3.0"></a>&nbsp;
     <a href="../LICENSE"><img height="20" src="https://img.shields.io/badge/license-MIT-blue.svg" alt="MIT License"></a>
   </p>
   <p><strong>🌎 English</strong>&nbsp;&nbsp;·&nbsp;&nbsp;<a href="from_gym_to_lab.zh-CN.md">🇨🇳 中文</a></p>
 </div>
 
-`go2_rl_gym` is now `go2_rl_lab`, built on **Isaac Lab 3.0 EA / Isaac Sim 6.1**, with **Newton MJWarp** as the physics backend.
+`go2_rl_gym` is now `go2_rl_lab`, built on **Isaac Lab 3.0 / Isaac Sim 6.2**, with **Newton MJWarp** as the physics backend.
 
-The original Isaac Gym implementation is preserved on the [gym branch](https://github.com/wty-yy/go2_rl_lab/tree/gym); the current Isaac Lab implementation uses the `lab` branch.
+The original Isaac Gym implementation is preserved on the [gym branch](https://github.com/wty-yy/go2_rl_lab/tree/gym); the current Isaac Lab implementation uses the [lab3.0 branch](https://github.com/wty-yy/go2_rl_lab/tree/lab3.0).
 
 ## Policy performance
 
@@ -23,7 +23,7 @@ Single-stage training and single-policy deployment, using only proprioceptive se
 
 ## Training performance
 
-RTX 4090 · MoE-CTS · Visualization disabled · 50 measured iterations after 10 warm-up iterations.
+RTX 4090 · MoE-CTS · Visualization disabled · 50 measured iterations after 10 warm-up iterations. Measurements were recorded on 2026-10-17, before the 3.0 release.
 
 | Parallel environments | Framework | Steady-state GPU memory (GiB) | Rollout time (s/iter) | Total iteration time (s/iter) |
 | ---: | --- | ---: | ---: | ---: |

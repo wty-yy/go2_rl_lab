@@ -2,14 +2,14 @@
   <h1>Go2 RL Lab</h1>
   <p><strong>基于 Isaac Lab 的 Unitree Go2 高速灵巧速度运动控制<br><a href="https://github.com/wty-yy/go2_rl_lab/tree/gym">（原 go2_rl_gym 分支）</a></strong></p>
   <p>
-    <a href="https://isaac-sim.github.io/IsaacLab/"><img height="20" src="https://img.shields.io/badge/Isaac%20Lab-3.0%20EA-silver.svg" alt="Isaac Lab 3.0 EA"></a>&nbsp;
+    <a href="https://github.com/isaac-sim/IsaacLab/releases/tag/v3.0.0"><img height="20" src="https://img.shields.io/badge/Isaac%20Lab-3.0-silver.svg" alt="Isaac Lab 3.0"></a>&nbsp;
     <a href="https://swanlab.cn/@wty-yy/go2-rl-lab/v1/lxqfax/overview"><img height="20" src="https://raw.githubusercontent.com/SwanHubX/assets/main/badge1.svg" alt="SwanLab"></a>&nbsp;
     <a href="LICENSE"><img height="20" src="https://img.shields.io/badge/license-MIT-blue.svg" alt="MIT License"></a>
   </p>
   <p><a href="README.md">🌎 English</a>&nbsp;&nbsp;·&nbsp;&nbsp;<strong>🇨🇳 中文</strong>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="https://www.roboticsproceedings.org/rss22/p156.pdf">📄 Paper [RSS 2026]</a></p>
 </div>
 
-📢 `go2_rl_gym` 正式更名为 `go2_rl_lab`，基于 **Isaac Lab 3.0 EA / Isaac Sim 6.1** 构建，物理后端切换为 **Newton MJWarp**，并做大量改进，更新说明见 [from_gym_to_lab.zh-CN.md](docs/from_gym_to_lab.zh-CN.md)
+📢 `go2_rl_gym` 正式更名为 `go2_rl_lab`，基于 **Isaac Lab 3.0 / Isaac Sim 6.2** 构建，物理后端切换为 **Newton MJWarp**，并做大量改进，更新说明见 [from_gym_to_lab.zh-CN.md](docs/from_gym_to_lab.zh-CN.md)
 
 <table width="100%">
   <thead>
@@ -60,7 +60,7 @@
 
 ## 📦 安装
 
-环境要求：Linux、NVIDIA GPU、Python 3.12、Isaac Sim 6.1 和 Isaac Lab 3.0 EA
+环境要求：Linux、NVIDIA GPU、Python 3.12、Isaac Sim 6.2 和 Isaac Lab 3.0
 
 环境安装包含两种方式：Docker容器和uv环境安装
 
@@ -104,7 +104,7 @@ docker run -it --name go2-rl-lab-3.0 \
 uv venv ~/go2-rl-lab-env --python 3.12 --seed --prompt go2-rl-lab  # ~/go2-rl-lab-env 下创建虚拟环境
 source ~/go2-rl-lab-env/bin/activate  # 激活虚拟环境
 uv pip install "torch==2.11.0" "torchvision==0.26.0" --index-url "https://download.pytorch.org/whl/cu128"  # pytorch
-uv pip install --prerelease="allow" --index-strategy unsafe-best-match "isaaclab[isaacsim,all]==3.0.0rc1" --extra-index-url https://pypi.nvidia.com  # isaaclab
+uv pip install --prerelease="allow" --index-strategy unsafe-best-match "isaaclab[isaacsim,all]==3.0.0" --extra-index-url https://pypi.nvidia.com  # isaaclab
 ```
 
 </details>
@@ -116,7 +116,7 @@ uv pip install --prerelease="allow" --index-strategy unsafe-best-match "isaaclab
 sudo apt update && sudo apt install -y git-lfs
 
 cd /home/user/Coding  # 容器路径；宿主机安装时替换为实际路径
-git clone --branch lab https://github.com/wty-yy/go2_rl_lab.git
+git clone --branch lab3.0 https://github.com/wty-yy/go2_rl_lab.git
 cd go2_rl_lab
 git lfs pull
 

@@ -4,7 +4,7 @@ Vendored RSL-RL 3.3.0 with feed-forward PPO, MoE-CTS, symmetry augmentation, pol
 
 ## Usage
 
-Run commands from the repository root inside the configured Isaac Lab 3.0 EA environment.
+Run commands from the repository root inside the configured Isaac Lab 3.0 environment.
 
 ```bash
 # Install the vendored learning package

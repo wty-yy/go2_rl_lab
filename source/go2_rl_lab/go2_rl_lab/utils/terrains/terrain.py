@@ -22,7 +22,7 @@ class SolidColorTerrainImporter(TerrainImporter):
         """Bind a constant-color surface to the ground's visual mesh.
 
         The standard importer retains the collision plane. Rebinding the visual
-        geometry removes EA's checker texture instead of only tinting it.
+        geometry removes the default checker texture instead of only tinting it.
         """
         material_cfg = self.cfg.visual_material
         if not isinstance(material_cfg, sim_utils.PreviewSurfaceCfg):
